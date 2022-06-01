@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  dash-server:
+    build: .
+    command: python dash-server.py
+    ports:
+      - "8050:8050"
+    environment:
+      - DEBUG=1
+      - DB_HOST=clickhouse
+      - DB_PORT=8123
+    depends_on:
+      - clickhouse
+
+  ticker-schedule:
+    build: .
+    command: python ticker-schedule.py
+    environment:
+      - DB_HOST=clickhouse
+      - DB_PORT=8123
+    depends_on:
+      - clickhouse
+
+  clickhouse:
+    image: clickhouse/clickhouse-server
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
